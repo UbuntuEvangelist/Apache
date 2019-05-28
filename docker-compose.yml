@@ -1,5 +1,5 @@
 hg-web:
-  image: 'htmlgraphic/apache:envoyer'
+  image: 'htmlgraphic/apache:envoyer' # PHP v7.3.2-3+ubuntu18.04.1+deb.sury.org+1
   ports:
     - "80:80"
     - "443:443"
@@ -10,7 +10,7 @@ hg-web:
   links:
     - "hg-db:mysql"
 hg-db:
-  image: 'htmlgraphic/mysql:5.7.18'
+  image: 'mysql:5.7.25'
   environment:
     - MYSQL_DATABASE=htmlgraphic
     - MYSQL_PASSWORD=new_password

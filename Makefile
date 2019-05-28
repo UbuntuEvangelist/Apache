@@ -1,7 +1,7 @@
 # Build a container via the command "make build"
 # By Jason Gegere <jason@htmlgraphic.com>
 
-TAG 		= 1.7.2
+TAG 		= 1.8.1
 CONTAINER 	= apache
 IMAGE_REPO 	= htmlgraphic
 IMAGE_NAME 	= $(IMAGE_REPO)/$(CONTAINER)
@@ -34,7 +34,7 @@ env:
 
 build:
 	@make env
-	docker build \
+	docker build --no-cache \
 		--build-arg VCS_REF=`git rev-parse --short HEAD` \
 		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 		--rm -t $(IMAGE_NAME):$(TAG) -t $(IMAGE_NAME):latest .
@@ -64,10 +64,11 @@ stop:
 	docker-compose stop
 
 rm:
-	@echo "On remove, containers are specifally referenced, as to not destroy ANY persistent data"
+	@echo "make rm - containers are specifically referenced, as to not destroy ANY persistent data"
 	@echo "Removing $(CONTAINER) and $(CONTAINER)_db"
 	docker rm -f $(CONTAINER)
 	docker rm -f $(CONTAINER)_db
+	docker rm -f $(CONTAINER)_phpmyadmin
 
 state:
 	docker ps -a | grep $(CONTAINER)
