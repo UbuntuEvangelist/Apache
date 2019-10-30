@@ -1,3 +1,4 @@
+
 ## Apache Docker
 
 [![Run Status](https://api.shippable.com/projects/54cf015b5ab6cc13528a7b6a/badge?branch=master)](https://app.shippable.com/projects/54cf015b5ab6cc13528a7b6a)
@@ -6,9 +7,11 @@
 [![Beerpay](https://beerpay.io/htmlgraphic/Apache/badge.svg?style=beer)](https://beerpay.io/htmlgraphic/Apache) [![Beerpay](https://beerpay.io/htmlgraphic/Apache/make-wish.svg?style=flat)](https://beerpay.io/htmlgraphic/Apache)
 
 
-This repo will give you a turn key Docker container build for use in production OR local development. The setup includes an Apache web service, PHP 7.3, PHP Composer, linked [MySQL 5.7.26](https://hub.docker.com/_/mysql) instance and a data container volume.
+This repo will give you a turn key Docker container build for use in **production** OR **dev**. The setup includes an Apache web service, PHP 7.3, PHP Composer, linked [MySQL 5.7.28](https://hub.docker.com/_/mysql) instance and a data container volume.
 
-In this repo you will find a number of complete Dockerfile builds used in **development** and **production** environments. Listed below is an explanation of each file. [Ask a question!](https://github.com/htmlgraphic/Apache/issues/new)
+Using containers offer a huge advantage when developing locally or in prodcution. Use this containers for development and deployment. Changing `NODE_ENVIRONMENT` within to `.env` to `dev` or `production` will offer a dynamic environment.
+
+Listed below is an explanation of each file. [Ask a question!](https://github.com/htmlgraphic/Apache/issues/new)
 
 #### Dependencies
 - Docker [Download](https://hub.docker.com/search/?type=edition&offering=community)
@@ -30,9 +33,9 @@ Apache                       # → Root of Docker Build
 │   ├── sample.conf          # → located within `/data/apache2/sites-enabled` duplicate / modify to host others domains
 │   └── supervisord          # → Supervisor is a client / server system which monitors and controls a number of processes on UNIX-like operating systems
 ├── .env.example             # → Rename file to `.env` for local environment variables used within build
-├── .circleci/               # → CircleCI 2.0
-│   └── config.yml           # → CircleCI Config
-├── docker-compose.local.yml # → Local build 
+├── .circleci/
+│   └── config.yml           # → CircleCI 2.0 Config
+├── docker-compose.local.yml # → Dev build 
 ├── docker-compose.yml       # → Production build
 ├── Dockerfile               # → Uses a basefile build to help speed up the docker container build process
 ├── Makefile                 # → Build command shortcuts
@@ -49,34 +52,37 @@ Launch the **Apache** instance locally and setup a local MySQL database containe
 
 The **Apache** container the directory `/data` is shared to your local system via **Line 7** within `docker-container.local.yml` file
 
+### Mac OS X / Linux
+
 >	Type `make` for more build options:
 
 ```bash
-$ git clone https://github.com/htmlgraphic/Apache.git ~/Docker/Apache && cd ~/Docker/Apache
-$ cp .env.example .env
-$ make run 
-	OR (non Make Windows)
-
-$ copy .env.example .env
-$ docker-compose -f docker-compose.local.yml up -d
+> git clone https://github.com/htmlgraphic/Apache.git ~/Docker/Apache && cd ~/Docker/Apache
+> cp .env.example .env
+> make run 
 ```
 
-### Run phpMyAdmin
+### (non Make Windows)
+```bash
+> copy .env.example .env
+> docker-compose -f docker-compose.local.yml up -d
+```
 
-Review MySQL access instructions upon `make run` command execution. Setup phpMyAdmin directly via command line.
+
+## phpMyAdmin
+
+Review MySQL access instructions upon `make run` command execution. Setup phpMyAdmin directly via command line. https://localhost:8080 
 
 ```bash
-$ docker run --name myadmin -d --link apache_db:db --net apache_default -p 8080:80 phpmyadmin/phpmyadmin
+> docker run --name myadmin -d --link apache_db:db --net apache_default -p 8080:80 phpmyadmin/phpmyadmin
 ```
-
-LOCAL: https://localhost:8080 
 
 Login using the following creditial stored within the .env file: 
 
 |username  |password  |
 |--|--|
-|root | $new_passwordac
-|$MYSQL_PASSWORD  |$MYSQL_PASSWORD  |
+|root | `$MYSQL_ROOT_PASSWORD`
+|`$MYSQL_PASSWORD`  |`$MYSQL_PASSWORD`  |
 
 
 
@@ -93,7 +99,7 @@ These continuous integration services will fully test the creation of your conta
 **[Shippable](https://shippable.com)** - Test **production** and **dev** Docker builds, can the container be built the without error? The ```/tests/build_tests.sh``` file ensures the can run with parameters defined. Shippable allows the use of [matrix environment variables](http://docs.shippable.com/ci_configure/#using-environment-variables) reducing build time and offer a more robust tests. If any test(s) fail the system should be reviewed closer.
 
 
-## Interacting with containers:
+## Interacting with Containers:
 
 List all running containers:
 
@@ -105,7 +111,7 @@ List all containers (including stopped containers):
 `docker ps -a`
 
 
-Read the log of a running container:
+Review og of a running container:
 
 `docker logs [CONTAINER ID OR NAME]`
 
@@ -150,8 +156,12 @@ Stop and start a container in separate operations:
 ## Teardown 
 #### (Stop all running containers started by Docker Compose):
 
+### Mac OS X / Linux
+```bash
+> make rm 
 ```
-		$ make rm 
-		OR (non Make Windows)
-		$ docker rm -f apache_web && docker rm -f apache_db
+
+### (non Make Windows)
+```bash
+> docker-compose stop
 ```
